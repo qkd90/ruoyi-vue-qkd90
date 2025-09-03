@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>ruoyi-vue-plus</artifactId>
-        <groupId>com.ruoyi</groupId>
-        <version>4.8.2</version>
+        <groupId>org.dromara</groupId>
+        <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ruoyi-extend</artifactId>
@@ -13,7 +13,7 @@
 
     <modules>
         <module>ruoyi-monitor-admin</module>
-        <module>ruoyi-xxl-job-admin</module>
+        <module>ruoyi-snailjob-server</module>
     </modules>
 
 </project>
