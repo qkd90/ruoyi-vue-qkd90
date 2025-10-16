@@ -1,6 +1,6 @@
 package org.dromara.demo.controller;
 
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.utils.MessageUtils;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
@@ -32,8 +32,8 @@ public class TestI18nController {
      * @param code 国际化code
      */
     @GetMapping()
-    public R<Void> get(String code) {
-        return R.ok(MessageUtils.message(code));
+    public RequestResponse<Void> get(String code) {
+        return RequestResponse.ok(MessageUtils.message(code));
     }
 
     /**
@@ -43,8 +43,8 @@ public class TestI18nController {
      * 测试使用 not.null
      */
     @GetMapping("/test1")
-    public R<Void> test1(@NotBlank(message = "{not.null}") String str) {
-        return R.ok(str);
+    public RequestResponse<Void> test1(@NotBlank(message = "{not.null}") String str) {
+        return RequestResponse.ok(str);
     }
 
     /**
@@ -54,8 +54,8 @@ public class TestI18nController {
      * 测试使用 not.null
      */
     @GetMapping("/test2")
-    public R<TestI18nBo> test2(@Validated TestI18nBo bo) {
-        return R.ok(bo);
+    public RequestResponse<TestI18nBo> test2(@Validated TestI18nBo bo) {
+        return RequestResponse.ok(bo);
     }
 
     @Data

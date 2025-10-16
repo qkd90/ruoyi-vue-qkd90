@@ -1,7 +1,7 @@
 package org.dromara.demo.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.demo.domain.TestDemo;
 import org.dromara.demo.mapper.TestDemoMapper;
@@ -37,7 +37,7 @@ public class TestBatchController extends BaseController {
      */
     @PostMapping("/add")
 //    @DS("slave")
-    public R<Void> add() {
+    public RequestResponse<Void> add() {
         List<TestDemo> list = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             TestDemo testDemo = new TestDemo();
@@ -56,7 +56,7 @@ public class TestBatchController extends BaseController {
      */
     @PostMapping("/addOrUpdate")
 //    @DS("slave")
-    public R<Void> addOrUpdate() {
+    public RequestResponse<Void> addOrUpdate() {
         List<TestDemo> list = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             TestDemo testDemo = new TestDemo();
@@ -82,7 +82,7 @@ public class TestBatchController extends BaseController {
      */
     @DeleteMapping()
 //    @DS("slave")
-    public R<Void> remove() {
+    public RequestResponse<Void> remove() {
         return toAjax(testDemoMapper.delete(new LambdaQueryWrapper<TestDemo>()
             .eq(TestDemo::getOrderNum, -1L)));
     }

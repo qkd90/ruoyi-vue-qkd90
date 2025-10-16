@@ -2,7 +2,7 @@ package org.dromara.system.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.service.DictService;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -46,8 +46,8 @@ public class SysNoticeController extends BaseController {
      */
     @SaCheckPermission("system:notice:query")
     @GetMapping(value = "/{noticeId}")
-    public R<SysNoticeVo> getInfo(@PathVariable Long noticeId) {
-        return R.ok(noticeService.selectNoticeById(noticeId));
+    public RequestResponse<SysNoticeVo> getInfo(@PathVariable Long noticeId) {
+        return RequestResponse.ok(noticeService.selectNoticeById(noticeId));
     }
 
     /**
@@ -56,14 +56,14 @@ public class SysNoticeController extends BaseController {
     @SaCheckPermission("system:notice:add")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Void> add(@Validated @RequestBody SysNoticeBo notice) {
+    public RequestResponse<Void> add(@Validated @RequestBody SysNoticeBo notice) {
         int rows = noticeService.insertNotice(notice);
         if (rows <= 0) {
-            return R.fail();
+            return RequestResponse.fail();
         }
         String type = dictService.getDictLabel("sys_notice_type", notice.getNoticeType());
         SseMessageUtils.publishAll("[" + type + "] " + notice.getNoticeTitle());
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -72,7 +72,7 @@ public class SysNoticeController extends BaseController {
     @SaCheckPermission("system:notice:edit")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Void> edit(@Validated @RequestBody SysNoticeBo notice) {
+    public RequestResponse<Void> edit(@Validated @RequestBody SysNoticeBo notice) {
         return toAjax(noticeService.updateNotice(notice));
     }
 
@@ -84,7 +84,7 @@ public class SysNoticeController extends BaseController {
     @SaCheckPermission("system:notice:remove")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @DeleteMapping("/{noticeIds}")
-    public R<Void> remove(@PathVariable Long[] noticeIds) {
+    public RequestResponse<Void> remove(@PathVariable Long[] noticeIds) {
         return toAjax(noticeService.deleteNoticeByIds(noticeIds));
     }
 }

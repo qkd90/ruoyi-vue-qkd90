@@ -1,10 +1,10 @@
 package org.dromara.system.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.mybatis.core.page.PageQuery;
-import org.dromara.common.core.domain.R;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
@@ -58,7 +58,7 @@ public class SysOperlogController extends BaseController {
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
     @SaCheckPermission("monitor:operlog:remove")
     @DeleteMapping("/{operIds}")
-    public R<Void> remove(@PathVariable Long[] operIds) {
+    public RequestResponse<Void> remove(@PathVariable Long[] operIds) {
         return toAjax(operLogService.deleteOperLogByIds(operIds));
     }
 
@@ -68,8 +68,8 @@ public class SysOperlogController extends BaseController {
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
     @SaCheckPermission("monitor:operlog:remove")
     @DeleteMapping("/clean")
-    public R<Void> clean() {
+    public RequestResponse<Void> clean() {
         operLogService.cleanOperLog();
-        return R.ok();
+        return RequestResponse.ok();
     }
 }

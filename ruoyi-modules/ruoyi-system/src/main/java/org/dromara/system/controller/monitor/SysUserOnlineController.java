@@ -6,7 +6,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.domain.dto.UserOnlineDTO;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -82,12 +82,12 @@ public class SysUserOnlineController extends BaseController {
     @SaCheckPermission("monitor:online:forceLogout")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
-    public R<Void> forceLogout(@PathVariable String tokenId) {
+    public RequestResponse<Void> forceLogout(@PathVariable String tokenId) {
         try {
             StpUtil.kickoutByTokenValue(tokenId);
         } catch (NotLoginException ignored) {
         }
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -115,7 +115,7 @@ public class SysUserOnlineController extends BaseController {
      */
     @Log(title = "在线设备", businessType = BusinessType.FORCE)
     @DeleteMapping("/myself/{tokenId}")
-    public R<Void> remove(@PathVariable("tokenId") String tokenId) {
+    public RequestResponse<Void> remove(@PathVariable("tokenId") String tokenId) {
         try {
             // 获取指定账号 id 的 token 集合
             List<String> keys = StpUtil.getTokenValueListByLoginId(StpUtil.getLoginIdAsString());
@@ -125,7 +125,7 @@ public class SysUserOnlineController extends BaseController {
                 .ifPresent(key -> StpUtil.kickoutByTokenValue(tokenId));
         } catch (NotLoginException ignored) {
         }
-        return R.ok();
+        return RequestResponse.ok();
     }
 
 }

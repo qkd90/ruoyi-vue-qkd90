@@ -1,7 +1,7 @@
 package org.dromara.demo.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.mail.utils.MailUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +31,9 @@ public class MailController {
      * @param text    内容
      */
     @GetMapping("/sendSimpleMessage")
-    public R<Void> sendSimpleMessage(String to, String subject, String text) {
+    public RequestResponse<Void> sendSimpleMessage(String to, String subject, String text) {
         MailUtils.sendText(to, subject, text);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -44,10 +44,10 @@ public class MailController {
      * @param text     内容
      */
     @GetMapping("/sendMessageWithAttachment")
-    public R<Void> sendMessageWithAttachment(String to, String subject, String text) {
+    public RequestResponse<Void> sendMessageWithAttachment(String to, String subject, String text) {
         // 附件路径 禁止前端传递 有任意读取系统文件风险
         MailUtils.sendText(to, subject, text, new File("/xxx/xxx"));
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -58,12 +58,12 @@ public class MailController {
      * @param text     内容
      */
     @GetMapping("/sendMessageWithAttachments")
-    public R<Void> sendMessageWithAttachments(String to, String subject, String text) {
+    public RequestResponse<Void> sendMessageWithAttachments(String to, String subject, String text) {
         // 附件路径 禁止前端传递 有任意读取系统文件风险
         String[] paths = new String[]{"/xxx/xxx", "/xxx/xxx"};
         File[] array = Arrays.stream(paths).map(File::new).toArray(File[]::new);
         MailUtils.sendText(to, subject, text, array);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
 }

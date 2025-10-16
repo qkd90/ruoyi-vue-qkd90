@@ -3,7 +3,7 @@ package org.dromara.system.controller.system;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import org.dromara.common.core.constant.TenantConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.excel.utils.ExcelUtil;
@@ -56,8 +56,8 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @SaCheckPermission("system:tenantPackage:list")
     @GetMapping("/selectList")
-    public R<List<SysTenantPackageVo>> selectList() {
-        return R.ok(tenantPackageService.selectList());
+    public RequestResponse<List<SysTenantPackageVo>> selectList() {
+        return RequestResponse.ok(tenantPackageService.selectList());
     }
 
     /**
@@ -80,9 +80,9 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @SaCheckPermission("system:tenantPackage:query")
     @GetMapping("/{packageId}")
-    public R<SysTenantPackageVo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<SysTenantPackageVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long packageId) {
-        return R.ok(tenantPackageService.queryById(packageId));
+        return RequestResponse.ok(tenantPackageService.queryById(packageId));
     }
 
     /**
@@ -93,9 +93,9 @@ public class SysTenantPackageController extends BaseController {
     @Log(title = "租户套餐", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantPackageBo bo) {
+    public RequestResponse<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantPackageBo bo) {
         if (!tenantPackageService.checkPackageNameUnique(bo)) {
-            return R.fail("新增套餐'" + bo.getPackageName() + "'失败，套餐名称已存在");
+            return RequestResponse.fail("新增套餐'" + bo.getPackageName() + "'失败，套餐名称已存在");
         }
         return toAjax(tenantPackageService.insertByBo(bo));
     }
@@ -108,9 +108,9 @@ public class SysTenantPackageController extends BaseController {
     @Log(title = "租户套餐", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysTenantPackageBo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody SysTenantPackageBo bo) {
         if (!tenantPackageService.checkPackageNameUnique(bo)) {
-            return R.fail("修改套餐'" + bo.getPackageName() + "'失败，套餐名称已存在");
+            return RequestResponse.fail("修改套餐'" + bo.getPackageName() + "'失败，套餐名称已存在");
         }
         return toAjax(tenantPackageService.updateByBo(bo));
     }
@@ -122,7 +122,7 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckPermission("system:tenantPackage:edit")
     @Log(title = "租户套餐", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@RequestBody SysTenantPackageBo bo) {
+    public RequestResponse<Void> changeStatus(@RequestBody SysTenantPackageBo bo) {
         return toAjax(tenantPackageService.updatePackageStatus(bo));
     }
 
@@ -135,7 +135,7 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckPermission("system:tenantPackage:remove")
     @Log(title = "租户套餐", businessType = BusinessType.DELETE)
     @DeleteMapping("/{packageIds}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] packageIds) {
         return toAjax(tenantPackageService.deleteWithValidByIds(List.of(packageIds), true));
     }

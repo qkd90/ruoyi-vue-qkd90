@@ -12,7 +12,7 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.dromara.common.core.constant.GlobalConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MessageUtils;
 import org.dromara.common.core.utils.ServletUtils;
@@ -76,10 +76,10 @@ public class RepeatSubmitAspect {
      */
     @AfterReturning(pointcut = "@annotation(repeatSubmit)", returning = "jsonResult")
     public void doAfterReturning(JoinPoint joinPoint, RepeatSubmit repeatSubmit, Object jsonResult) {
-        if (jsonResult instanceof R<?> r) {
+        if (jsonResult instanceof RequestResponse<?> requestResponse) {
             try {
                 // 成功则不删除redis数据 保证在有效时间内无法重复提交
-                if (r.getCode() == R.SUCCESS) {
+                if (requestResponse.getCode() == RequestResponse.SUCCESS) {
                     return;
                 }
                 RedisUtils.deleteObject(KEY_CACHE.get());

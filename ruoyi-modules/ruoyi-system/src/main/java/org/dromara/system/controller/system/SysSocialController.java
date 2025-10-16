@@ -1,7 +1,7 @@
 package org.dromara.system.controller.system;
 
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.system.domain.vo.SysSocialVo;
@@ -31,8 +31,8 @@ public class SysSocialController extends BaseController {
      * 查询社会化关系列表
      */
     @GetMapping("/list")
-    public R<List<SysSocialVo>> list() {
-        return R.ok(socialUserService.queryListByUserId(LoginHelper.getUserId()));
+    public RequestResponse<List<SysSocialVo>> list() {
+        return RequestResponse.ok(socialUserService.queryListByUserId(LoginHelper.getUserId()));
     }
 
 }

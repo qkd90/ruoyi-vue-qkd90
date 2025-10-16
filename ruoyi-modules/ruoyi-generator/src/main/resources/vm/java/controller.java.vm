@@ -6,13 +6,13 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.core.domain.RequestResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.mybatis.core.page.PageQuery;
-import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
@@ -49,9 +49,9 @@ public class ${ClassName}Controller extends BaseController {
         return ${className}Service.queryPageList(bo, pageQuery);
     }
 #elseif($table.tree)
-    public R<List<${ClassName}Vo>> list(${ClassName}Bo bo) {
+    public RequestResponse<List<${ClassName}Vo>> list(${ClassName}Bo bo) {
         List<${ClassName}Vo> list = ${className}Service.queryList(bo);
-        return R.ok(list);
+        return RequestResponse.ok(list);
     }
 #end
 
@@ -73,9 +73,9 @@ public class ${ClassName}Controller extends BaseController {
      */
     @SaCheckPermission("${permissionPrefix}:query")
     @GetMapping("/{${pkColumn.javaField}}")
-    public R<${ClassName}Vo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<${ClassName}Vo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable ${pkColumn.javaType} ${pkColumn.javaField}) {
-        return R.ok(${className}Service.queryById(${pkColumn.javaField}));
+        return RequestResponse.ok(${className}Service.queryById(${pkColumn.javaField}));
     }
 
     /**
@@ -85,7 +85,7 @@ public class ${ClassName}Controller extends BaseController {
     @Log(title = "${functionName}", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody ${ClassName}Bo bo) {
+    public RequestResponse<Void> add(@Validated(AddGroup.class) @RequestBody ${ClassName}Bo bo) {
         return toAjax(${className}Service.insertByBo(bo));
     }
 
@@ -96,7 +96,7 @@ public class ${ClassName}Controller extends BaseController {
     @Log(title = "${functionName}", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody ${ClassName}Bo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody ${ClassName}Bo bo) {
         return toAjax(${className}Service.updateByBo(bo));
     }
 
@@ -108,7 +108,7 @@ public class ${ClassName}Controller extends BaseController {
     @SaCheckPermission("${permissionPrefix}:remove")
     @Log(title = "${functionName}", businessType = BusinessType.DELETE)
     @DeleteMapping("/{${pkColumn.javaField}s}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable ${pkColumn.javaType}[] ${pkColumn.javaField}s) {
         return toAjax(${className}Service.deleteWithValidByIds(List.of(${pkColumn.javaField}s), true));
     }

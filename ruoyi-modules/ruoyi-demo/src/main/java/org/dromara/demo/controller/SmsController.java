@@ -1,7 +1,7 @@
 package org.dromara.demo.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.sms4j.api.SmsBlend;
 import org.dromara.sms4j.api.entity.SmsResponse;
 import org.dromara.sms4j.core.factory.SmsFactory;
@@ -31,12 +31,12 @@ public class SmsController {
      * @param templateId 模板ID
      */
     @GetMapping("/sendAliyun")
-    public R<Object> sendAliyun(String phones, String templateId) {
+    public RequestResponse<Object> sendAliyun(String phones, String templateId) {
         LinkedHashMap<String, String> map = new LinkedHashMap<>(1);
         map.put("code", "1234");
         SmsBlend smsBlend = SmsFactory.getSmsBlend("config1");
         SmsResponse smsResponse = smsBlend.sendMessage(phones, templateId, map);
-        return R.ok(smsResponse);
+        return RequestResponse.ok(smsResponse);
     }
 
     /**
@@ -46,13 +46,13 @@ public class SmsController {
      * @param templateId 模板ID
      */
     @GetMapping("/sendTencent")
-    public R<Object> sendTencent(String phones, String templateId) {
+    public RequestResponse<Object> sendTencent(String phones, String templateId) {
         LinkedHashMap<String, String> map = new LinkedHashMap<>(1);
 //        map.put("2", "测试测试");
         map.put("1", "1234");
         SmsBlend smsBlend = SmsFactory.getSmsBlend("config2");
         SmsResponse smsResponse = smsBlend.sendMessage(phones, templateId, map);
-        return R.ok(smsResponse);
+        return RequestResponse.ok(smsResponse);
     }
 
     /**
@@ -61,10 +61,10 @@ public class SmsController {
      * @param phone 手机号
      */
     @GetMapping("/addBlacklist")
-    public R<Object> addBlacklist(String phone){
+    public RequestResponse<Object> addBlacklist(String phone){
         SmsBlend smsBlend = SmsFactory.getSmsBlend("config1");
         smsBlend.joinInBlacklist(phone);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -73,10 +73,10 @@ public class SmsController {
      * @param phone 手机号
      */
     @GetMapping("/removeBlacklist")
-    public R<Object> removeBlacklist(String phone){
+    public RequestResponse<Object> removeBlacklist(String phone){
         SmsBlend smsBlend = SmsFactory.getSmsBlend("config1");
         smsBlend.removeFromBlacklist(phone);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
 }

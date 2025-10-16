@@ -1,7 +1,7 @@
 package org.dromara.demo.controller.queue;
 
 import cn.hutool.core.util.RandomUtil;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.redis.utils.QueueUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class PriorityQueueController {
      * @param queueName 队列名
      */
     @GetMapping("/add")
-    public R<Void> add(String queueName) {
+    public RequestResponse<Void> add(String queueName) {
         // 用完了一定要销毁 否则会一直存在
         boolean b = QueueUtils.destroyPriorityQueue(queueName);
         log.info("通道: {} , 删除: {}", queueName, b);
@@ -50,7 +50,7 @@ public class PriorityQueueController {
                 log.info("通道: {} , 发送数据: {}, 发送失败", queueName, data);
             }
         }
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -61,16 +61,16 @@ public class PriorityQueueController {
      * @param orderNum  排序号
      */
     @GetMapping("/remove")
-    public R<Void> remove(String queueName, String name, Integer orderNum) {
+    public RequestResponse<Void> remove(String queueName, String name, Integer orderNum) {
         PriorityDemo data = new PriorityDemo();
         data.setName(name);
         data.setOrderNum(orderNum);
         if (QueueUtils.removePriorityQueueObject(queueName, data)) {
             log.info("通道: {} , 删除数据: {}", queueName, data);
         } else {
-            return R.fail("操作失败");
+            return RequestResponse.fail("操作失败");
         }
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -79,13 +79,13 @@ public class PriorityQueueController {
      * @param queueName 队列名
      */
     @GetMapping("/get")
-    public R<Void> get(String queueName) {
+    public RequestResponse<Void> get(String queueName) {
         PriorityDemo data;
         do {
             data = QueueUtils.getPriorityQueueObject(queueName);
             log.info("通道: {} , 获取数据: {}", queueName, data);
         } while (data != null);
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
 }

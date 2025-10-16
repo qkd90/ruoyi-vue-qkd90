@@ -1,7 +1,7 @@
 package org.dromara.demo.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.core.validate.AddGroup;
@@ -73,11 +73,11 @@ public class TestDemoController extends BaseController {
     @Log(title = "测试单表", businessType = BusinessType.IMPORT)
     @SaCheckPermission("demo:demo:import")
     @PostMapping(value = "/importData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public R<Void> importData(@RequestPart("file") MultipartFile file) throws Exception {
+    public RequestResponse<Void> importData(@RequestPart("file") MultipartFile file) throws Exception {
         ExcelResult<TestDemoImportVo> excelResult = ExcelUtil.importExcel(file.getInputStream(), TestDemoImportVo.class, true);
         List<TestDemo> list = MapstructUtils.convert(excelResult.getList(), TestDemo.class);
         testDemoService.saveBatch(list);
-        return R.ok(excelResult.getAnalysis());
+        return RequestResponse.ok(excelResult.getAnalysis());
     }
 
     /**
@@ -102,9 +102,9 @@ public class TestDemoController extends BaseController {
      */
     @SaCheckPermission("demo:demo:query")
     @GetMapping("/{id}")
-    public R<TestDemoVo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<TestDemoVo> getInfo(@NotNull(message = "主键不能为空")
                                  @PathVariable("id") Long id) {
-        return R.ok(testDemoService.queryById(id));
+        return RequestResponse.ok(testDemoService.queryById(id));
     }
 
     /**
@@ -114,7 +114,7 @@ public class TestDemoController extends BaseController {
     @Log(title = "测试单表", businessType = BusinessType.INSERT)
     @RepeatSubmit(interval = 2, timeUnit = TimeUnit.SECONDS, message = "{repeat.submit.message}")
     @PostMapping()
-    public R<Void> add(@RequestBody TestDemoBo bo) {
+    public RequestResponse<Void> add(@RequestBody TestDemoBo bo) {
         // 使用校验工具对标 @Validated(AddGroup.class) 注解
         // 用于在非 Controller 的地方校验对象
         ValidatorUtils.validate(bo, AddGroup.class);
@@ -128,7 +128,7 @@ public class TestDemoController extends BaseController {
     @Log(title = "测试单表", businessType = BusinessType.UPDATE)
     @RepeatSubmit
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody TestDemoBo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody TestDemoBo bo) {
         return toAjax(testDemoService.updateByBo(bo));
     }
 
@@ -140,7 +140,7 @@ public class TestDemoController extends BaseController {
     @SaCheckPermission("demo:demo:remove")
     @Log(title = "测试单表", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(testDemoService.deleteWithValidByIds(Arrays.asList(ids), true));
     }

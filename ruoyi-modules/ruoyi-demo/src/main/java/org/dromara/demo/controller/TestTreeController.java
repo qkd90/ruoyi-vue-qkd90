@@ -1,7 +1,7 @@
 package org.dromara.demo.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.core.validate.QueryGroup;
@@ -42,9 +42,9 @@ public class TestTreeController extends BaseController {
      */
     @SaCheckPermission("demo:tree:list")
     @GetMapping("/list")
-    public R<List<TestTreeVo>> list(@Validated(QueryGroup.class) TestTreeBo bo) {
+    public RequestResponse<List<TestTreeVo>> list(@Validated(QueryGroup.class) TestTreeBo bo) {
         List<TestTreeVo> list = testTreeService.queryList(bo);
-        return R.ok(list);
+        return RequestResponse.ok(list);
     }
 
     /**
@@ -65,9 +65,9 @@ public class TestTreeController extends BaseController {
      */
     @SaCheckPermission("demo:tree:query")
     @GetMapping("/{id}")
-    public R<TestTreeVo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<TestTreeVo> getInfo(@NotNull(message = "主键不能为空")
                                  @PathVariable("id") Long id) {
-        return R.ok(testTreeService.queryById(id));
+        return RequestResponse.ok(testTreeService.queryById(id));
     }
 
     /**
@@ -77,7 +77,7 @@ public class TestTreeController extends BaseController {
     @Log(title = "测试树表", businessType = BusinessType.INSERT)
     @RepeatSubmit
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody TestTreeBo bo) {
+    public RequestResponse<Void> add(@Validated(AddGroup.class) @RequestBody TestTreeBo bo) {
         return toAjax(testTreeService.insertByBo(bo));
     }
 
@@ -88,7 +88,7 @@ public class TestTreeController extends BaseController {
     @Log(title = "测试树表", businessType = BusinessType.UPDATE)
     @RepeatSubmit
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody TestTreeBo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody TestTreeBo bo) {
         return toAjax(testTreeService.updateByBo(bo));
     }
 
@@ -100,7 +100,7 @@ public class TestTreeController extends BaseController {
     @SaCheckPermission("demo:tree:remove")
     @Log(title = "测试树表", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(testTreeService.deleteWithValidByIds(Arrays.asList(ids), true));
     }

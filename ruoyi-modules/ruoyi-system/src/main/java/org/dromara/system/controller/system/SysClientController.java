@@ -6,13 +6,13 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.core.domain.RequestResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.mybatis.core.page.PageQuery;
-import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
@@ -63,9 +63,9 @@ public class SysClientController extends BaseController {
      */
     @SaCheckPermission("system:client:query")
     @GetMapping("/{id}")
-    public R<SysClientVo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<SysClientVo> getInfo(@NotNull(message = "主键不能为空")
                                   @PathVariable Long id) {
-        return R.ok(sysClientService.queryById(id));
+        return RequestResponse.ok(sysClientService.queryById(id));
     }
 
     /**
@@ -75,7 +75,7 @@ public class SysClientController extends BaseController {
     @Log(title = "客户端管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysClientBo bo) {
+    public RequestResponse<Void> add(@Validated(AddGroup.class) @RequestBody SysClientBo bo) {
         return toAjax(sysClientService.insertByBo(bo));
     }
 
@@ -86,7 +86,7 @@ public class SysClientController extends BaseController {
     @Log(title = "客户端管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysClientBo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody SysClientBo bo) {
         return toAjax(sysClientService.updateByBo(bo));
     }
 
@@ -96,7 +96,7 @@ public class SysClientController extends BaseController {
     @SaCheckPermission("system:client:edit")
     @Log(title = "客户端管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@RequestBody SysClientBo bo) {
+    public RequestResponse<Void> changeStatus(@RequestBody SysClientBo bo) {
         return toAjax(sysClientService.updateClientStatus(bo.getClientId(), bo.getStatus()));
     }
 
@@ -108,7 +108,7 @@ public class SysClientController extends BaseController {
     @SaCheckPermission("system:client:remove")
     @Log(title = "客户端管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(sysClientService.deleteWithValidByIds(List.of(ids), true));
     }

@@ -8,19 +8,19 @@
     </resultMap>
 
     <sql id="selectRoleVo">
-        select distinct r.role_id,
-                        r.role_name,
-                        r.role_key,
-                        r.role_sort,
-                        r.data_scope,
-                        r.menu_check_strictly,
-                        r.dept_check_strictly,
-                        r.status,
-                        r.del_flag,
-                        r.create_time,
-                        r.remark
-        from sys_role r
-                 left join sys_user_role sur on sur.role_id = r.role_id
+        select distinct requestResponse.role_id,
+                        requestResponse.role_name,
+                        requestResponse.role_key,
+                        requestResponse.role_sort,
+                        requestResponse.data_scope,
+                        requestResponse.menu_check_strictly,
+                        requestResponse.dept_check_strictly,
+                        requestResponse.status,
+                        requestResponse.del_flag,
+                        requestResponse.create_time,
+                        requestResponse.remark
+        from sys_role requestResponse
+                 left join sys_user_role sur on sur.role_id = requestResponse.role_id
                  left join sys_user u on u.user_id = sur.user_id
                  left join sys_dept d on u.dept_id = d.dept_id
     </sql>
@@ -37,23 +37,23 @@
 
     <select id="selectRolePermissionByUserId" parameterType="Long" resultMap="SysRoleResult">
         <include refid="selectRoleVo"/>
-        WHERE r.del_flag = '0' and sur.user_id = #{userId}
+        WHERE requestResponse.del_flag = '0' and sur.user_id = #{userId}
     </select>
 
     <select id="selectRolesByUserId" parameterType="Long" resultMap="SysRoleResult">
-        select r.role_id,
-               r.role_name,
-               r.role_key,
-               r.role_sort,
-               r.data_scope,
-               r.status
-        from sys_role r
-        WHERE r.del_flag = '0' and r.role_id in (select role_id from sys_user_role where user_id = #{userId})
+        select requestResponse.role_id,
+               requestResponse.role_name,
+               requestResponse.role_key,
+               requestResponse.role_sort,
+               requestResponse.data_scope,
+               requestResponse.status
+        from sys_role requestResponse
+        WHERE requestResponse.del_flag = '0' and requestResponse.role_id in (select role_id from sys_user_role where user_id = #{userId})
     </select>
 
     <select id="selectRoleById" resultMap="SysRoleResult">
         <include refid="selectRoleVo"/>
-        WHERE r.del_flag = '0' and r.role_id = #{roleId}
+        WHERE requestResponse.del_flag = '0' and requestResponse.role_id = #{roleId}
     </select>
 
 </mapper>

@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -60,7 +60,7 @@ public class SysLogininforController extends BaseController {
     @SaCheckPermission("monitor:logininfor:remove")
     @Log(title = "登录日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{infoIds}")
-    public R<Void> remove(@PathVariable Long[] infoIds) {
+    public RequestResponse<Void> remove(@PathVariable Long[] infoIds) {
         return toAjax(logininforService.deleteLogininforByIds(infoIds));
     }
 
@@ -70,20 +70,20 @@ public class SysLogininforController extends BaseController {
     @SaCheckPermission("monitor:logininfor:remove")
     @Log(title = "登录日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
-    public R<Void> clean() {
+    public RequestResponse<Void> clean() {
         logininforService.cleanLogininfor();
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     @SaCheckPermission("monitor:logininfor:unlock")
     @Log(title = "账户解锁", businessType = BusinessType.OTHER)
     @GetMapping("/unlock/{userName}")
-    public R<Void> unlock(@PathVariable("userName") String userName) {
+    public RequestResponse<Void> unlock(@PathVariable("userName") String userName) {
         String loginName = CacheConstants.PWD_ERR_CNT_KEY + userName;
         if (RedisUtils.hasKey(loginName)) {
             RedisUtils.deleteObject(loginName);
         }
-        return R.ok();
+        return RequestResponse.ok();
     }
 
 }

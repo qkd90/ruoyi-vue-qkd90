@@ -1,7 +1,7 @@
 package org.dromara.system.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.core.validate.QueryGroup;
@@ -53,9 +53,9 @@ public class SysOssConfigController extends BaseController {
      */
     @SaCheckPermission("system:ossConfig:list")
     @GetMapping("/{ossConfigId}")
-    public R<SysOssConfigVo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<SysOssConfigVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable Long ossConfigId) {
-        return R.ok(ossConfigService.queryById(ossConfigId));
+        return RequestResponse.ok(ossConfigService.queryById(ossConfigId));
     }
 
     /**
@@ -65,7 +65,7 @@ public class SysOssConfigController extends BaseController {
     @Log(title = "对象存储配置", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysOssConfigBo bo) {
+    public RequestResponse<Void> add(@Validated(AddGroup.class) @RequestBody SysOssConfigBo bo) {
         return toAjax(ossConfigService.insertByBo(bo));
     }
 
@@ -76,7 +76,7 @@ public class SysOssConfigController extends BaseController {
     @Log(title = "对象存储配置", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysOssConfigBo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody SysOssConfigBo bo) {
         return toAjax(ossConfigService.updateByBo(bo));
     }
 
@@ -88,7 +88,7 @@ public class SysOssConfigController extends BaseController {
     @SaCheckPermission("system:ossConfig:remove")
     @Log(title = "对象存储配置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ossConfigIds}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ossConfigIds) {
         return toAjax(ossConfigService.deleteWithValidByIds(List.of(ossConfigIds), true));
     }
@@ -99,7 +99,7 @@ public class SysOssConfigController extends BaseController {
     @SaCheckPermission("system:ossConfig:edit")
     @Log(title = "对象存储状态修改", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@RequestBody SysOssConfigBo bo) {
+    public RequestResponse<Void> changeStatus(@RequestBody SysOssConfigBo bo) {
         return toAjax(ossConfigService.updateOssConfigStatus(bo));
     }
 }

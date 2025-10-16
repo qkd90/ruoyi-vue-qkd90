@@ -2,7 +2,7 @@ package org.dromara.demo.controller.queue;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.redis.utils.QueueUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +37,7 @@ public class DelayedQueueController {
      * @param queueName 队列名
      */
     @GetMapping("/subscribe")
-    public R<Void> subscribe(String queueName) {
+    public RequestResponse<Void> subscribe(String queueName) {
         log.info("通道: {} 监听中......", queueName);
         // 项目初始化设置一次即可
         QueueUtils.subscribeBlockingQueue(queueName, (String orderNum) -> {
@@ -48,7 +48,7 @@ public class DelayedQueueController {
                 log.info("数据处理: {}", orderNum);
             });
         }, true);
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -59,11 +59,11 @@ public class DelayedQueueController {
      * @param time      延迟时间(秒)
      */
     @GetMapping("/add")
-    public R<Void> add(String queueName, String orderNum, Long time) {
+    public RequestResponse<Void> add(String queueName, String orderNum, Long time) {
         QueueUtils.addDelayedQueueObject(queueName, orderNum, time, TimeUnit.SECONDS);
         // 观察发送时间
         log.info("通道: {} , 发送数据: {}", queueName, orderNum);
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -73,13 +73,13 @@ public class DelayedQueueController {
      * @param orderNum  订单号
      */
     @GetMapping("/remove")
-    public R<Void> remove(String queueName, String orderNum) {
+    public RequestResponse<Void> remove(String queueName, String orderNum) {
         if (QueueUtils.removeDelayedQueueObject(queueName, orderNum)) {
             log.info("通道: {} , 删除数据: {}", queueName, orderNum);
         } else {
-            return R.fail("操作失败");
+            return RequestResponse.fail("操作失败");
         }
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -88,10 +88,10 @@ public class DelayedQueueController {
      * @param queueName 队列名
      */
     @GetMapping("/destroy")
-    public R<Void> destroy(String queueName) {
+    public RequestResponse<Void> destroy(String queueName) {
         // 用完了一定要销毁 否则会一直存在
         QueueUtils.destroyDelayedQueue(queueName);
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
 }

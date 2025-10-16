@@ -1,6 +1,6 @@
 package org.dromara.demo.controller;
 
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.redis.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +24,11 @@ public class RedisPubSubController {
      * @param value 发送内容
      */
     @GetMapping("/pub")
-    public R<Void> pub(String key, String value) {
+    public RequestResponse<Void> pub(String key, String value) {
         RedisUtils.publish(key, value, consumer -> {
             System.out.println("发布通道 => " + key + ", 发送值 => " + value);
         });
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -37,11 +37,11 @@ public class RedisPubSubController {
      * @param key 通道Key
      */
     @GetMapping("/sub")
-    public R<Void> sub(String key) {
+    public RequestResponse<Void> sub(String key) {
         RedisUtils.subscribe(key, String.class, msg -> {
             System.out.println("订阅通道 => " + key + ", 接收值 => " + msg);
         });
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
 }

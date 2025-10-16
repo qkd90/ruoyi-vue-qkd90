@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
-public class R<T> implements Serializable {
+public class RequestResponse<T> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -35,39 +35,39 @@ public class R<T> implements Serializable {
 
     private T data;
 
-    public static <T> R<T> ok() {
+    public static <T> RequestResponse<T> ok() {
         return restResult(null, SUCCESS, "操作成功");
     }
 
-    public static <T> R<T> ok(T data) {
+    public static <T> RequestResponse<T> ok(T data) {
         return restResult(data, SUCCESS, "操作成功");
     }
 
-    public static <T> R<T> ok(String msg) {
+    public static <T> RequestResponse<T> ok(String msg) {
         return restResult(null, SUCCESS, msg);
     }
 
-    public static <T> R<T> ok(String msg, T data) {
+    public static <T> RequestResponse<T> ok(String msg, T data) {
         return restResult(data, SUCCESS, msg);
     }
 
-    public static <T> R<T> fail() {
+    public static <T> RequestResponse<T> fail() {
         return restResult(null, FAIL, "操作失败");
     }
 
-    public static <T> R<T> fail(String msg) {
+    public static <T> RequestResponse<T> fail(String msg) {
         return restResult(null, FAIL, msg);
     }
 
-    public static <T> R<T> fail(T data) {
+    public static <T> RequestResponse<T> fail(T data) {
         return restResult(data, FAIL, "操作失败");
     }
 
-    public static <T> R<T> fail(String msg, T data) {
+    public static <T> RequestResponse<T> fail(String msg, T data) {
         return restResult(data, FAIL, msg);
     }
 
-    public static <T> R<T> fail(int code, String msg) {
+    public static <T> RequestResponse<T> fail(int code, String msg) {
         return restResult(null, code, msg);
     }
 
@@ -77,7 +77,7 @@ public class R<T> implements Serializable {
      * @param msg 返回内容
      * @return 警告消息
      */
-    public static <T> R<T> warn(String msg) {
+    public static <T> RequestResponse<T> warn(String msg) {
         return restResult(null, HttpStatus.WARN, msg);
     }
 
@@ -88,23 +88,23 @@ public class R<T> implements Serializable {
      * @param data 数据对象
      * @return 警告消息
      */
-    public static <T> R<T> warn(String msg, T data) {
+    public static <T> RequestResponse<T> warn(String msg, T data) {
         return restResult(data, HttpStatus.WARN, msg);
     }
 
-    private static <T> R<T> restResult(T data, int code, String msg) {
-        R<T> r = new R<>();
-        r.setCode(code);
-        r.setData(data);
-        r.setMsg(msg);
-        return r;
+    private static <T> RequestResponse<T> restResult(T data, int code, String msg) {
+        RequestResponse<T> requestResponse = new RequestResponse<>();
+        requestResponse.setCode(code);
+        requestResponse.setData(data);
+        requestResponse.setMsg(msg);
+        return requestResponse;
     }
 
-    public static <T> Boolean isError(R<T> ret) {
+    public static <T> Boolean isError(RequestResponse<T> ret) {
         return !isSuccess(ret);
     }
 
-    public static <T> Boolean isSuccess(R<T> ret) {
-        return R.SUCCESS == ret.getCode();
+    public static <T> Boolean isSuccess(RequestResponse<T> ret) {
+        return RequestResponse.SUCCESS == ret.getCode();
     }
 }

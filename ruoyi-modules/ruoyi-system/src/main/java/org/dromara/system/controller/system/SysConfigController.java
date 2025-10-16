@@ -3,7 +3,7 @@ package org.dromara.system.controller.system;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -59,8 +59,8 @@ public class SysConfigController extends BaseController {
      */
     @SaCheckPermission("system:config:query")
     @GetMapping(value = "/{configId}")
-    public R<SysConfigVo> getInfo(@PathVariable Long configId) {
-        return R.ok(configService.selectConfigById(configId));
+    public RequestResponse<SysConfigVo> getInfo(@PathVariable Long configId) {
+        return RequestResponse.ok(configService.selectConfigById(configId));
     }
 
     /**
@@ -69,8 +69,8 @@ public class SysConfigController extends BaseController {
      * @param configKey 参数Key
      */
     @GetMapping(value = "/configKey/{configKey}")
-    public R<String> getConfigKey(@PathVariable String configKey) {
-        return R.ok("操作成功", configService.selectConfigByKey(configKey));
+    public RequestResponse<String> getConfigKey(@PathVariable String configKey) {
+        return RequestResponse.ok("操作成功", configService.selectConfigByKey(configKey));
     }
 
     /**
@@ -79,12 +79,12 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:add")
     @Log(title = "参数管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Void> add(@Validated @RequestBody SysConfigBo config) {
+    public RequestResponse<Void> add(@Validated @RequestBody SysConfigBo config) {
         if (!configService.checkConfigKeyUnique(config)) {
-            return R.fail("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return RequestResponse.fail("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
         configService.insertConfig(config);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -93,12 +93,12 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:edit")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Void> edit(@Validated @RequestBody SysConfigBo config) {
+    public RequestResponse<Void> edit(@Validated @RequestBody SysConfigBo config) {
         if (!configService.checkConfigKeyUnique(config)) {
-            return R.fail("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return RequestResponse.fail("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
         configService.updateConfig(config);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -107,9 +107,9 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:edit")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping("/updateByKey")
-    public R<Void> updateByKey(@RequestBody SysConfigBo config) {
+    public RequestResponse<Void> updateByKey(@RequestBody SysConfigBo config) {
         configService.updateConfig(config);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -120,9 +120,9 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:remove")
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{configIds}")
-    public R<Void> remove(@PathVariable Long[] configIds) {
+    public RequestResponse<Void> remove(@PathVariable Long[] configIds) {
         configService.deleteConfigByIds(Arrays.asList(configIds));
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -131,8 +131,8 @@ public class SysConfigController extends BaseController {
     @SaCheckPermission("system:config:remove")
     @Log(title = "参数管理", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
-    public R<Void> refreshCache() {
+    public RequestResponse<Void> refreshCache() {
         configService.resetConfigCache();
-        return R.ok();
+        return RequestResponse.ok();
     }
 }

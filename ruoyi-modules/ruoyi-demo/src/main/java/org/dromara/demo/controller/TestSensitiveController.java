@@ -1,6 +1,6 @@
 package org.dromara.demo.controller;
 
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.sensitive.annotation.Sensitive;
 import org.dromara.common.sensitive.core.SensitiveStrategy;
@@ -28,14 +28,14 @@ public class TestSensitiveController extends BaseController {
      * 测试数据脱敏
      */
     @GetMapping("/test")
-    public R<TestSensitive> test() {
+    public RequestResponse<TestSensitive> test() {
         TestSensitive testSensitive = new TestSensitive();
         testSensitive.setIdCard("210397198608215431");
         testSensitive.setPhone("17640125371");
         testSensitive.setAddress("北京市朝阳区某某四合院1203室");
         testSensitive.setEmail("17640125371@163.com");
         testSensitive.setBankCard("6226456952351452853");
-        return R.ok(testSensitive);
+        return RequestResponse.ok(testSensitive);
     }
 
     @Data

@@ -1,6 +1,6 @@
 package org.dromara.common.web.core;
 
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.utils.StringUtils;
 
 /**
@@ -16,8 +16,8 @@ public class BaseController {
      * @param rows 影响行数
      * @return 操作结果
      */
-    protected R<Void> toAjax(int rows) {
-        return rows > 0 ? R.ok() : R.fail();
+    protected RequestResponse<Void> toAjax(int rows) {
+        return rows > 0 ? RequestResponse.ok() : RequestResponse.fail();
     }
 
     /**
@@ -26,8 +26,8 @@ public class BaseController {
      * @param result 结果
      * @return 操作结果
      */
-    protected R<Void> toAjax(boolean result) {
-        return result ? R.ok() : R.fail();
+    protected RequestResponse<Void> toAjax(boolean result) {
+        return result ? RequestResponse.ok() : RequestResponse.fail();
     }
 
     /**

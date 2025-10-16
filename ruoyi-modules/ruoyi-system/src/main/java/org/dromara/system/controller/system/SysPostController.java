@@ -5,7 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.SystemConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -61,8 +61,8 @@ public class SysPostController extends BaseController {
      */
     @SaCheckPermission("system:post:query")
     @GetMapping(value = "/{postId}")
-    public R<SysPostVo> getInfo(@PathVariable Long postId) {
-        return R.ok(postService.selectPostById(postId));
+    public RequestResponse<SysPostVo> getInfo(@PathVariable Long postId) {
+        return RequestResponse.ok(postService.selectPostById(postId));
     }
 
     /**
@@ -71,11 +71,11 @@ public class SysPostController extends BaseController {
     @SaCheckPermission("system:post:add")
     @Log(title = "岗位管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Void> add(@Validated @RequestBody SysPostBo post) {
+    public RequestResponse<Void> add(@Validated @RequestBody SysPostBo post) {
         if (!postService.checkPostNameUnique(post)) {
-            return R.fail("新增岗位'" + post.getPostName() + "'失败，岗位名称已存在");
+            return RequestResponse.fail("新增岗位'" + post.getPostName() + "'失败，岗位名称已存在");
         } else if (!postService.checkPostCodeUnique(post)) {
-            return R.fail("新增岗位'" + post.getPostName() + "'失败，岗位编码已存在");
+            return RequestResponse.fail("新增岗位'" + post.getPostName() + "'失败，岗位编码已存在");
         }
         return toAjax(postService.insertPost(post));
     }
@@ -86,14 +86,14 @@ public class SysPostController extends BaseController {
     @SaCheckPermission("system:post:edit")
     @Log(title = "岗位管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Void> edit(@Validated @RequestBody SysPostBo post) {
+    public RequestResponse<Void> edit(@Validated @RequestBody SysPostBo post) {
         if (!postService.checkPostNameUnique(post)) {
-            return R.fail("修改岗位'" + post.getPostName() + "'失败，岗位名称已存在");
+            return RequestResponse.fail("修改岗位'" + post.getPostName() + "'失败，岗位名称已存在");
         } else if (!postService.checkPostCodeUnique(post)) {
-            return R.fail("修改岗位'" + post.getPostName() + "'失败，岗位编码已存在");
+            return RequestResponse.fail("修改岗位'" + post.getPostName() + "'失败，岗位编码已存在");
         } else if (SystemConstants.DISABLE.equals(post.getStatus())
             && postService.countUserPostById(post.getPostId()) > 0) {
-            return R.fail("该岗位下存在已分配用户，不能禁用!");
+            return RequestResponse.fail("该岗位下存在已分配用户，不能禁用!");
         }
         return toAjax(postService.updatePost(post));
     }
@@ -106,7 +106,7 @@ public class SysPostController extends BaseController {
     @SaCheckPermission("system:post:remove")
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{postIds}")
-    public R<Void> remove(@PathVariable Long[] postIds) {
+    public RequestResponse<Void> remove(@PathVariable Long[] postIds) {
         return toAjax(postService.deletePostByIds(postIds));
     }
 
@@ -118,7 +118,7 @@ public class SysPostController extends BaseController {
      */
     @SaCheckPermission("system:post:query")
     @GetMapping("/optionselect")
-    public R<List<SysPostVo>> optionselect(@RequestParam(required = false) Long[] postIds, @RequestParam(required = false) Long deptId) {
+    public RequestResponse<List<SysPostVo>> optionselect(@RequestParam(required = false) Long[] postIds, @RequestParam(required = false) Long deptId) {
         List<SysPostVo> list = new ArrayList<>();
         if (ObjectUtil.isNotNull(deptId)) {
             SysPostBo post = new SysPostBo();
@@ -127,7 +127,7 @@ public class SysPostController extends BaseController {
         } else if (postIds != null) {
             list = postService.selectPostByIds(List.of(postIds));
         }
-        return R.ok(list);
+        return RequestResponse.ok(list);
     }
 
 }

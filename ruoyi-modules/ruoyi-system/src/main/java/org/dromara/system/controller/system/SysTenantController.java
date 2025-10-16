@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.TenantConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.encrypt.annotation.ApiEncrypt;
@@ -74,9 +74,9 @@ public class SysTenantController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @SaCheckPermission("system:tenant:query")
     @GetMapping("/{id}")
-    public R<SysTenantVo> getInfo(@NotNull(message = "主键不能为空")
+    public RequestResponse<SysTenantVo> getInfo(@NotNull(message = "主键不能为空")
                                   @PathVariable Long id) {
-        return R.ok(tenantService.queryById(id));
+        return RequestResponse.ok(tenantService.queryById(id));
     }
 
     /**
@@ -89,9 +89,9 @@ public class SysTenantController extends BaseController {
     @Lock4j
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantBo bo) {
+    public RequestResponse<Void> add(@Validated(AddGroup.class) @RequestBody SysTenantBo bo) {
         if (!tenantService.checkCompanyNameUnique(bo)) {
-            return R.fail("新增租户'" + bo.getCompanyName() + "'失败，企业名称已存在");
+            return RequestResponse.fail("新增租户'" + bo.getCompanyName() + "'失败，企业名称已存在");
         }
         return toAjax(TenantHelper.ignore(() -> tenantService.insertByBo(bo)));
     }
@@ -104,10 +104,10 @@ public class SysTenantController extends BaseController {
     @Log(title = "租户管理", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody SysTenantBo bo) {
+    public RequestResponse<Void> edit(@Validated(EditGroup.class) @RequestBody SysTenantBo bo) {
         tenantService.checkTenantAllowed(bo.getTenantId());
         if (!tenantService.checkCompanyNameUnique(bo)) {
-            return R.fail("修改租户'" + bo.getCompanyName() + "'失败，公司名称已存在");
+            return RequestResponse.fail("修改租户'" + bo.getCompanyName() + "'失败，公司名称已存在");
         }
         return toAjax(tenantService.updateByBo(bo));
     }
@@ -119,7 +119,7 @@ public class SysTenantController extends BaseController {
     @SaCheckPermission("system:tenant:edit")
     @Log(title = "租户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@RequestBody SysTenantBo bo) {
+    public RequestResponse<Void> changeStatus(@RequestBody SysTenantBo bo) {
         tenantService.checkTenantAllowed(bo.getTenantId());
         return toAjax(tenantService.updateTenantStatus(bo));
     }
@@ -133,7 +133,7 @@ public class SysTenantController extends BaseController {
     @SaCheckPermission("system:tenant:remove")
     @Log(title = "租户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
+    public RequestResponse<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(tenantService.deleteWithValidByIds(List.of(ids), true));
     }
@@ -145,9 +145,9 @@ public class SysTenantController extends BaseController {
      */
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @GetMapping("/dynamic/{tenantId}")
-    public R<Void> dynamicTenant(@NotBlank(message = "租户ID不能为空") @PathVariable String tenantId) {
+    public RequestResponse<Void> dynamicTenant(@NotBlank(message = "租户ID不能为空") @PathVariable String tenantId) {
         TenantHelper.setDynamic(tenantId, true);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -155,9 +155,9 @@ public class SysTenantController extends BaseController {
      */
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @GetMapping("/dynamic/clear")
-    public R<Void> dynamicClear() {
+    public RequestResponse<Void> dynamicClear() {
         TenantHelper.clearDynamic();
-        return R.ok();
+        return RequestResponse.ok();
     }
 
 
@@ -171,8 +171,8 @@ public class SysTenantController extends BaseController {
     @SaCheckPermission("system:tenant:edit")
     @Log(title = "租户管理", businessType = BusinessType.UPDATE)
     @GetMapping("/syncTenantPackage")
-    public R<Void> syncTenantPackage(@NotBlank(message = "租户ID不能为空") String tenantId,
-                                     @NotNull(message = "套餐ID不能为空") Long packageId) {
+    public RequestResponse<Void> syncTenantPackage(@NotBlank(message = "租户ID不能为空") String tenantId,
+                                                   @NotNull(message = "套餐ID不能为空") Long packageId) {
         return toAjax(TenantHelper.ignore(() -> tenantService.syncTenantPackage(tenantId, packageId)));
     }
 
@@ -182,12 +182,12 @@ public class SysTenantController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @Log(title = "租户管理", businessType = BusinessType.INSERT)
     @GetMapping("/syncTenantDict")
-    public R<Void> syncTenantDict() {
+    public RequestResponse<Void> syncTenantDict() {
         if (!TenantHelper.isEnable()) {
-            return R.fail("当前未开启租户模式");
+            return RequestResponse.fail("当前未开启租户模式");
         }
         tenantService.syncTenantDict();
-        return R.ok("同步租户字典成功");
+        return RequestResponse.ok("同步租户字典成功");
     }
 
 }

@@ -14,7 +14,7 @@ import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.dromara.common.core.constant.SystemConstants;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.core.domain.model.LoginBody;
 import org.dromara.common.core.domain.model.RegisterBody;
 import org.dromara.common.core.domain.model.SocialLoginBody;
@@ -82,7 +82,7 @@ public class AuthController {
      */
     @ApiEncrypt
     @PostMapping("/login")
-    public R<LoginVo> login(@RequestBody String body) {
+    public RequestResponse<LoginVo> login(@RequestBody String body) {
         LoginBody loginBody = JsonUtils.parseObject(body, LoginBody.class);
         ValidatorUtils.validate(loginBody);
         // 授权类型和客户端id
@@ -92,9 +92,9 @@ public class AuthController {
         // 查询不到 client 或 client 内不包含 grantType
         if (ObjectUtil.isNull(client) || !StringUtils.contains(client.getGrantType(), grantType)) {
             log.info("客户端id: {} 认证类型：{} 异常!.", clientId, grantType);
-            return R.fail(MessageUtils.message("auth.grant.type.error"));
+            return RequestResponse.fail(MessageUtils.message("auth.grant.type.error"));
         } else if (!SystemConstants.NORMAL.equals(client.getStatus())) {
-            return R.fail(MessageUtils.message("auth.grant.type.blocked"));
+            return RequestResponse.fail(MessageUtils.message("auth.grant.type.blocked"));
         }
         // 校验租户
         loginService.checkTenant(loginBody.getTenantId());
@@ -108,7 +108,7 @@ public class AuthController {
             dto.setUserIds(List.of(userId));
             SseMessageUtils.publishMessage(dto);
         }, 5, TimeUnit.SECONDS);
-        return R.ok(loginVo);
+        return RequestResponse.ok(loginVo);
     }
 
     /**
@@ -118,11 +118,11 @@ public class AuthController {
      * @return 结果
      */
     @GetMapping("/binding/{source}")
-    public R<String> authBinding(@PathVariable("source") String source,
-                                 @RequestParam String tenantId, @RequestParam String domain) {
+    public RequestResponse<String> authBinding(@PathVariable("source") String source,
+                                               @RequestParam String tenantId, @RequestParam String domain) {
         SocialLoginConfigProperties obj = socialProperties.getType().get(source);
         if (ObjectUtil.isNull(obj)) {
-            return R.fail(source + "平台账号暂不支持");
+            return RequestResponse.fail(source + "平台账号暂不支持");
         }
         AuthRequest authRequest = SocialUtils.getAuthRequest(source, socialProperties);
         Map<String, String> map = new HashMap<>();
@@ -130,7 +130,7 @@ public class AuthController {
         map.put("domain", domain);
         map.put("state", AuthStateUtils.createState());
         String authorizeUrl = authRequest.authorize(Base64.encode(JsonUtils.toJsonString(map), StandardCharsets.UTF_8));
-        return R.ok("操作成功", authorizeUrl);
+        return RequestResponse.ok("操作成功", authorizeUrl);
     }
 
     /**
@@ -140,7 +140,7 @@ public class AuthController {
      * @return 结果
      */
     @PostMapping("/social/callback")
-    public R<Void> socialCallback(@RequestBody SocialLoginBody loginBody) {
+    public RequestResponse<Void> socialCallback(@RequestBody SocialLoginBody loginBody) {
         // 校验token
         StpUtil.checkLogin();
         // 获取第三方登录信息
@@ -150,10 +150,10 @@ public class AuthController {
         AuthUser authUserData = response.getData();
         // 判断授权响应是否成功
         if (!response.ok()) {
-            return R.fail(response.getMsg());
+            return RequestResponse.fail(response.getMsg());
         }
         loginService.socialRegister(authUserData);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
 
@@ -163,11 +163,11 @@ public class AuthController {
      * @param socialId socialId
      */
     @DeleteMapping(value = "/unlock/{socialId}")
-    public R<Void> unlockSocial(@PathVariable Long socialId) {
+    public RequestResponse<Void> unlockSocial(@PathVariable Long socialId) {
         // 校验token
         StpUtil.checkLogin();
         Boolean rows = socialUserService.deleteWithValidById(socialId);
-        return rows ? R.ok() : R.fail("取消授权失败");
+        return rows ? RequestResponse.ok() : RequestResponse.fail("取消授权失败");
     }
 
 
@@ -175,9 +175,9 @@ public class AuthController {
      * 退出登录
      */
     @PostMapping("/logout")
-    public R<Void> logout() {
+    public RequestResponse<Void> logout() {
         loginService.logout();
-        return R.ok("退出成功");
+        return RequestResponse.ok("退出成功");
     }
 
     /**
@@ -185,12 +185,12 @@ public class AuthController {
      */
     @ApiEncrypt
     @PostMapping("/register")
-    public R<Void> register(@Validated @RequestBody RegisterBody user) {
+    public RequestResponse<Void> register(@Validated @RequestBody RegisterBody user) {
         if (!configService.selectRegisterEnabled(user.getTenantId())) {
-            return R.fail("当前系统没有开启注册功能！");
+            return RequestResponse.fail("当前系统没有开启注册功能！");
         }
         registerService.register(user);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -199,14 +199,14 @@ public class AuthController {
      * @return 租户列表
      */
     @GetMapping("/tenant/list")
-    public R<LoginTenantVo> tenantList(HttpServletRequest request) throws Exception {
+    public RequestResponse<LoginTenantVo> tenantList(HttpServletRequest request) throws Exception {
         // 返回对象
         LoginTenantVo result = new LoginTenantVo();
         boolean enable = TenantHelper.isEnable();
         result.setTenantEnabled(enable);
         // 如果未开启租户这直接返回
         if (!enable) {
-            return R.ok(result);
+            return RequestResponse.ok(result);
         }
 
         List<SysTenantVo> tenantList = tenantService.queryList(new SysTenantBo());
@@ -215,7 +215,7 @@ public class AuthController {
             // 如果只超管返回所有租户
             if (LoginHelper.isSuperAdmin()) {
                 result.setVoList(voList);
-                return R.ok(result);
+                return RequestResponse.ok(result);
             }
         } catch (NotLoginException ignored) {
         }
@@ -233,7 +233,7 @@ public class AuthController {
         List<TenantListVo> list = StreamUtils.filter(voList, vo ->
             StringUtils.equalsIgnoreCase(vo.getDomain(), host));
         result.setVoList(CollUtil.isNotEmpty(list) ? list : voList);
-        return R.ok(result);
+        return RequestResponse.ok(result);
     }
 
 }

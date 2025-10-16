@@ -2,7 +2,7 @@ package org.dromara.demo.controller;
 
 import cn.hutool.core.thread.ThreadUtil;
 import org.dromara.common.core.constant.CacheNames;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.redis.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -42,8 +42,8 @@ public class RedisCacheController {
      */
     @Cacheable(cacheNames = "demo:cache#60s#10m#20#1", key = "#key", condition = "#key != null")
     @GetMapping("/test1")
-    public R<String> test1(String key, String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> test1(String key, String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
     /**
@@ -56,8 +56,8 @@ public class RedisCacheController {
      */
     @CachePut(cacheNames = CacheNames.DEMO_CACHE, key = "#key", condition = "#key != null")
     @GetMapping("/test2")
-    public R<String> test2(String key, String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> test2(String key, String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
     /**
@@ -70,8 +70,8 @@ public class RedisCacheController {
      */
     @CacheEvict(cacheNames = CacheNames.DEMO_CACHE, key = "#key", condition = "#key != null")
     @GetMapping("/test3")
-    public R<String> test3(String key, String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> test3(String key, String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
     /**
@@ -80,13 +80,13 @@ public class RedisCacheController {
      * 11秒后获取 判断是否相等
      */
     @GetMapping("/test6")
-    public R<Boolean> test6(String key, String value) {
+    public RequestResponse<Boolean> test6(String key, String value) {
         RedisUtils.setCacheObject(key, value);
         boolean flag = RedisUtils.expire(key, Duration.ofSeconds(10));
         System.out.println("***********" + flag);
         ThreadUtil.sleep(11 * 1000);
         Object obj = RedisUtils.getCacheObject(key);
-        return R.ok(value.equals(obj));
+        return RequestResponse.ok(value.equals(obj));
     }
 
 }

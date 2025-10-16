@@ -2,7 +2,7 @@ package org.dromara.demo.controller.queue;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.redis.utils.QueueUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +35,7 @@ public class BoundedQueueController {
      * @param capacity  容量
      */
     @GetMapping("/add")
-    public R<Void> add(String queueName, int capacity) {
+    public RequestResponse<Void> add(String queueName, int capacity) {
         // 用完了一定要销毁 否则会一直存在
         boolean b = QueueUtils.destroyBoundedQueue(queueName);
         log.info("通道: {} , 删除: {}", queueName, b);
@@ -44,7 +44,7 @@ public class BoundedQueueController {
             log.info("通道: {} , 设置容量: {}", queueName, capacity);
         } else {
             log.info("通道: {} , 设置容量失败", queueName);
-            return R.fail("操作失败");
+            return RequestResponse.fail("操作失败");
         }
         for (int i = 0; i < 11; i++) {
             String data = "data-" + i;
@@ -55,7 +55,7 @@ public class BoundedQueueController {
                 log.info("通道: {} , 发送数据: {}", queueName, data);
             }
         }
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -64,14 +64,14 @@ public class BoundedQueueController {
      * @param queueName 队列名
      */
     @GetMapping("/remove")
-    public R<Void> remove(String queueName) {
+    public RequestResponse<Void> remove(String queueName) {
         String data = "data-" + 5;
         if (QueueUtils.removeBoundedQueueObject(queueName, data)) {
             log.info("通道: {} , 删除数据: {}", queueName, data);
         } else {
-            return R.fail("操作失败");
+            return RequestResponse.fail("操作失败");
         }
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
     /**
@@ -80,13 +80,13 @@ public class BoundedQueueController {
      * @param queueName 队列名
      */
     @GetMapping("/get")
-    public R<Void> get(String queueName) {
+    public RequestResponse<Void> get(String queueName) {
         String data;
         do {
             data = QueueUtils.getBoundedQueueObject(queueName);
             log.info("通道: {} , 获取数据: {}", queueName, data);
         } while (data != null);
-        return R.ok("操作成功");
+        return RequestResponse.ok("操作成功");
     }
 
 }

@@ -5,7 +5,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -52,7 +52,7 @@ public class GenController extends BaseController {
      */
     @SaCheckPermission("tool:gen:query")
     @GetMapping(value = "/{tableId}")
-    public R<Map<String, Object>> getInfo(@PathVariable Long tableId) {
+    public RequestResponse<Map<String, Object>> getInfo(@PathVariable Long tableId) {
         GenTable table = genTableService.selectGenTableById(tableId);
         List<GenTable> tables = genTableService.selectGenTableAll();
         List<GenTableColumn> list = genTableService.selectGenTableColumnListByTableId(tableId);
@@ -60,7 +60,7 @@ public class GenController extends BaseController {
         map.put("info", table);
         map.put("rows", list);
         map.put("tables", tables);
-        return R.ok(map);
+        return RequestResponse.ok(map);
     }
 
     /**
@@ -92,12 +92,12 @@ public class GenController extends BaseController {
     @SaCheckPermission("tool:gen:import")
     @Log(title = "代码生成", businessType = BusinessType.IMPORT)
     @PostMapping("/importTable")
-    public R<Void> importTableSave(String tables, String dataName) {
+    public RequestResponse<Void> importTableSave(String tables, String dataName) {
         String[] tableNames = Convert.toStrArray(tables);
         // 查询表信息
         List<GenTable> tableList = genTableService.selectDbTableListByNames(tableNames, dataName);
         genTableService.importGenTable(tableList, dataName);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -106,10 +106,10 @@ public class GenController extends BaseController {
     @SaCheckPermission("tool:gen:edit")
     @Log(title = "代码生成", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Void> editSave(@Validated @RequestBody GenTable genTable) {
+    public RequestResponse<Void> editSave(@Validated @RequestBody GenTable genTable) {
         genTableService.validateEdit(genTable);
         genTableService.updateGenTable(genTable);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -120,9 +120,9 @@ public class GenController extends BaseController {
     @SaCheckPermission("tool:gen:remove")
     @Log(title = "代码生成", businessType = BusinessType.DELETE)
     @DeleteMapping("/{tableIds}")
-    public R<Void> remove(@PathVariable Long[] tableIds) {
+    public RequestResponse<Void> remove(@PathVariable Long[] tableIds) {
         genTableService.deleteGenTableByIds(tableIds);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -132,9 +132,9 @@ public class GenController extends BaseController {
      */
     @SaCheckPermission("tool:gen:preview")
     @GetMapping("/preview/{tableId}")
-    public R<Map<String, String>> preview(@PathVariable("tableId") Long tableId) throws IOException {
+    public RequestResponse<Map<String, String>> preview(@PathVariable("tableId") Long tableId) throws IOException {
         Map<String, String> dataMap = genTableService.previewCode(tableId);
-        return R.ok(dataMap);
+        return RequestResponse.ok(dataMap);
     }
 
     /**
@@ -158,9 +158,9 @@ public class GenController extends BaseController {
     @SaCheckPermission("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/genCode/{tableId}")
-    public R<Void> genCode(@PathVariable("tableId") Long tableId) {
+    public RequestResponse<Void> genCode(@PathVariable("tableId") Long tableId) {
         genTableService.generatorCode(tableId);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -171,9 +171,9 @@ public class GenController extends BaseController {
     @SaCheckPermission("tool:gen:edit")
     @Log(title = "代码生成", businessType = BusinessType.UPDATE)
     @GetMapping("/synchDb/{tableId}")
-    public R<Void> synchDb(@PathVariable("tableId") Long tableId) {
+    public RequestResponse<Void> synchDb(@PathVariable("tableId") Long tableId) {
         genTableService.synchDb(tableId);
-        return R.ok();
+        return RequestResponse.ok();
     }
 
     /**
@@ -208,7 +208,7 @@ public class GenController extends BaseController {
      */
     @SaCheckPermission("tool:gen:list")
     @GetMapping(value = "/getDataNames")
-    public R<Object> getCurrentDataSourceNameList(){
-        return R.ok(DataBaseHelper.getDataSourceNameList());
+    public RequestResponse<Object> getCurrentDataSourceNameList(){
+        return RequestResponse.ok(DataBaseHelper.getDataSourceNameList());
     }
 }

@@ -26,7 +26,7 @@
         from sys_user u
              left join sys_dept d on u.dept_id = d.dept_id
              left join sys_user_role sur on u.user_id = sur.user_id
-             left join sys_role r on r.role_id = sur.role_id
+             left join sys_role requestResponse on requestResponse.role_id = sur.role_id
         ${ew.getCustomSqlSegment}
     </select>
 
@@ -35,7 +35,7 @@
         from sys_user u
              left join sys_dept d on u.dept_id = d.dept_id
              left join sys_user_role sur on u.user_id = sur.user_id
-             left join sys_role r on r.role_id = sur.role_id
+             left join sys_role requestResponse on requestResponse.role_id = sur.role_id
         ${ew.getCustomSqlSegment}
     </select>
 

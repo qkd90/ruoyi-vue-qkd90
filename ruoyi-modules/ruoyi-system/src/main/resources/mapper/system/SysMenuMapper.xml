@@ -12,7 +12,7 @@
         m.perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
         from sys_menu m
             left join sys_role_menu rm on m.menu_id = rm.menu_id
-            left join sys_role r on rm.role_id = r.role_id
+            left join sys_role requestResponse on rm.role_id = requestResponse.role_id
         ${ew.getCustomSqlSegment}
     </select>
 
@@ -34,9 +34,9 @@
                         m.create_time
         from sys_menu m
                  left join sys_role_menu rm on m.menu_id = rm.menu_id and m.status = '0'
-                 left join sys_role r on rm.role_id = r.role_id and r.status = '0'
+                 left join sys_role requestResponse on rm.role_id = requestResponse.role_id and requestResponse.status = '0'
         where m.menu_type in ('M', 'C')
-          and r.role_id in (select role_id from sys_user_role where user_id = #{userId})
+          and requestResponse.role_id in (select role_id from sys_user_role where user_id = #{userId})
         order by m.parent_id, m.order_num
     </select>
 
@@ -56,8 +56,8 @@
         select distinct m.perms
         from sys_menu m
                  left join sys_role_menu rm on m.menu_id = rm.menu_id and m.status = '0'
-                 left join sys_role r on r.role_id = rm.role_id and r.status = '0'
-        where r.role_id in (select role_id from sys_user_role where user_id = #{userId})
+                 left join sys_role requestResponse on requestResponse.role_id = rm.role_id and requestResponse.status = '0'
+        where requestResponse.role_id in (select role_id from sys_user_role where user_id = #{userId})
     </select>
 
     <select id="selectMenuPermsByRoleId" parameterType="Long" resultType="String">

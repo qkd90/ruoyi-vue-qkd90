@@ -1,6 +1,6 @@
 package org.dromara.demo.controller;
 
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.common.ratelimiter.annotation.RateLimiter;
 import org.dromara.common.ratelimiter.enums.LimitType;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +25,8 @@ public class RedisRateLimiterController {
      */
     @RateLimiter(count = 2, time = 10)
     @GetMapping("/test")
-    public R<String> test(String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> test(String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
     /**
@@ -35,8 +35,8 @@ public class RedisRateLimiterController {
      */
     @RateLimiter(count = 2, time = 10, limitType = LimitType.IP)
     @GetMapping("/testip")
-    public R<String> testip(String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> testip(String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
     /**
@@ -45,8 +45,8 @@ public class RedisRateLimiterController {
      */
     @RateLimiter(count = 2, time = 10, limitType = LimitType.CLUSTER)
     @GetMapping("/testcluster")
-    public R<String> testcluster(String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> testcluster(String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
     /**
@@ -57,8 +57,8 @@ public class RedisRateLimiterController {
      */
     @RateLimiter(count = 2, time = 10, limitType = LimitType.IP, key = "#value")
     @GetMapping("/testObj")
-    public R<String> testObj(String value) {
-        return R.ok("操作成功", value);
+    public RequestResponse<String> testObj(String value) {
+        return RequestResponse.ok("操作成功", value);
     }
 
 }

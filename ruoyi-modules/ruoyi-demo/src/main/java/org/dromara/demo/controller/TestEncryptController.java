@@ -1,6 +1,6 @@
 package org.dromara.demo.controller;
 
-import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.RequestResponse;
 import org.dromara.demo.domain.TestDemoEncrypt;
 import org.dromara.demo.mapper.TestDemoEncryptMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class TestEncryptController {
      * @param value 测试value
      */
     @GetMapping()
-    public R<Map<String, TestDemoEncrypt>> test(String key, String value) {
+    public RequestResponse<Map<String, TestDemoEncrypt>> test(String key, String value) {
         if (!encryptEnable) {
             throw new RuntimeException("加密功能未开启!");
         }
@@ -48,7 +48,7 @@ public class TestEncryptController {
         map.put("加密", demo);
         TestDemoEncrypt testDemo = mapper.selectById(demo.getId());
         map.put("解密", testDemo);
-        return R.ok(map);
+        return RequestResponse.ok(map);
     }
 
 
